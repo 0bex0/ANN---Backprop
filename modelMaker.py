@@ -2,39 +2,28 @@ import neuralNetwork
 
 class Models:
 
-    def __init__(self, *args):
+    def __init__(self, numModels):
 
         self.nets = []
         self.trainedMLP = []
+        self.numModels = numModels
+
+        """Creates file holding info on all created neural networks
+        Data is stored in format "number of hidden nodes - initial learning parameter - initial neuron biases/weights"""
         numInputs = int(input("How many inputs do you want the ANN to have? "))
+        networkFile = open("neuralNetworks.txt", "w")
+        learningPara = float(input("What step size would you like to initialize the ANN with? "))
 
-        if len(args) == 1:
+        for i in range(self.numModels):
 
-            self.numModels = args[0]
-
-            """Creates file holding info on all created neural networks
-            Data is stored in format "number of hidden nodes - initial learning parameter - initial neuron biases/weights"""
-            networkFile = open("neuralNetworks.txt", "w")
-            learningPara = float(input("What step size would you like to initialize the ANN with? "))
-
-            for i in range(self.numModels):
-
-                """Creates 'numModels' number of neural networks, with the given number of inputs and the specified 
-                learning parameter, then creates a string representation of said neural network and writes it to the 
-                file containing all the neural networks info """
-                ann = neuralNetwork.AnnModel(numInputs, learningPara)
-                self.nets.append(ann)
-                annString = f"{ann.numHidden} - {ann.learning} - {ann.neurons} \n"
-                networkFile.write(annString)
-            networkFile.close()
-        else:
-            trained = args[1]
-            for netString in args[0]:
-                ann = neuralNetwork.AnnModel(netString, numInputs)
-                if trained:
-                    self.trainedMLP.append(ann)
-                else:
-                    self.nets.append(ann)
+            """Creates 'numModels' number of neural networks, with the given number of inputs and the specified 
+            learning parameter, then creates a string representation of said neural network and writes it to the 
+            file containing all the neural networks info """
+            ann = neuralNetwork.AnnModel(numInputs, learningPara)
+            self.nets.append(ann)
+            annString = f"{ann.numHidden} - {ann.learning} - {ann.neurons} \n"
+            networkFile.write(annString)
+        networkFile.close()
 
     """Writes final biases and weights of a an array of trained neural networks to a text file"""
     def writeTrainedModels(self):

@@ -1,80 +1,61 @@
 import random
 import math
-import ast
 
 class AnnModel:
 
-    def __init__(self, *args):
+    def __init__(self, inputs, learning):
 
         """Creates an ANN, by initializing the number of hidden nodes in the hidden layer and then assigning random values to
             all biases and connection weights"""
-        if type(args[0]) == int:
 
-            inputs = args[0]
-            learning = args[1]
-            # number of hidden nodes, learning parameter
-            self.numHidden = random.randint(int(inputs/2), (2*inputs))
-            self.startLearning = learning
-            self.stopLearning = learning/10
-            self.learning = learning
-            self.alpha = 0.9
+        # number of hidden nodes, learning parameter
+        self.numHidden = random.randint(int(inputs/2), (2*inputs))
+        self.startLearning = learning
+        self.stopLearning = learning/10
+        self.learning = learning
+        self.alpha = 0.9
 
-            """Neuron dictionary, where 
-            key:value 
-            neuron number:[neuron bias, [neuron input connection weights]]
-            """
-            self.neurons = {}
+        """Neuron dictionary, where 
+        key:value 
+        neuron number:[neuron bias, [neuron input connection weights]]
+        """
+        self.neurons = {}
 
-            biasRange = 2/inputs
-            self.weightChanges = []
+        biasRange = 2/inputs
+        self.weightChanges = []
 
-            # For loop to create all nodes, number of hidden nodes, plus one output node
-            for i in range(self.numHidden + 1):
+        # For loop to create all nodes, number of hidden nodes, plus one output node
+        for i in range(self.numHidden + 1):
 
-                # Array to be filled with 0s which will hold previous weight changes of neuron connection weights/bias
-                # in order to apply momentum to the training of MLP
-                prevChanges = []
+            # Array to be filled with 0s which will hold previous weight changes of neuron connection weights/bias
+            # in order to apply momentum to the training of MLP
+            prevChanges = []
 
-                # If output node then its bias initialization range should be based on number of hidden nodes
-                if i == self.numHidden:
-                    biasRange = 2/self.numHidden
-                    inputs = self.numHidden
+            # If output node then its bias initialization range should be based on number of hidden nodes
+            if i == self.numHidden:
+                biasRange = 2/self.numHidden
+                inputs = self.numHidden
 
-                # Creates a random bias for neuron within bias initialization range
-                self.neurons[i] = []
-                neuronBias = round(random.uniform(-biasRange, biasRange), 2)
-                self.neurons[i].append(neuronBias)
+            # Creates a random bias for neuron within bias initialization range
+            self.neurons[i] = []
+            neuronBias = round(random.uniform(-biasRange, biasRange), 2)
+            self.neurons[i].append(neuronBias)
+            prevChanges.append(0)
+
+            """ Creates list of weights for connections leading into node and then adds a randomised weight created
+            within weight initialization range for each connection"""
+            weights = []
+            for j in range(inputs):
+
+                # Weight for each connection leading into the neuron is randomised
+                conWeight = round(random.uniform(-biasRange, biasRange), 2)
+                weights.append(conWeight)
                 prevChanges.append(0)
 
-                """ Creates list of weights for connections leading into node and then adds a randomised weight created
-                within weight initialization range for each connection"""
-                weights = []
-                for j in range(inputs):
-
-                    # Weight for each connection leading into the neuron is randomised
-                    conWeight = round(random.uniform(-biasRange, biasRange), 2)
-                    weights.append(conWeight)
-                    prevChanges.append(0)
-
-                # Adds connection weights to neuron in neuron dictionary
-                self.neurons[i].append(weights)
-                # Adds previous weight changes for this node to array holding previous weight changes of all node
-                self.weightChanges.append(prevChanges)
-
-        # If information for neural network is given in string form, ANN model is created with those parameters
-        else:
-            inputs = args[1]
-            annInfo = args[0].split(" - ")
-            self.numHidden = int(annInfo[0])
-            self.learning = float(annInfo[1])
-            self.neurons = ast.literal_eval(annInfo[2])
-            self.weightChanges = []
-            for i in range(self.numHidden + 1):
-                if i != self.numHidden:
-                    prevChanges = [0 for x in range(inputs+1)]
-                else:
-                    prevChanges = [0 for x in range(self.numHidden + 1)]
-                self.weightChanges.append(prevChanges)
+            # Adds connection weights to neuron in neuron dictionary
+            self.neurons[i].append(weights)
+            # Adds previous weight changes for this node to array holding previous weight changes of all node
+            self.weightChanges.append(prevChanges)
 
     """Updates the weights/biases of a neuron after a forward pass has been executed and the delta for that neuron has
      been calculated using the derivative of the sigmoid function. 
