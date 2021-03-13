@@ -1,4 +1,5 @@
 import modelMaker
+
 """For each data point in the training set the line is stripped of all extra white space, and split so that the 
     input values are stored in an array. List comprehension is used to change all array values to floats"""
 trainingArray = []

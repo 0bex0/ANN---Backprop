@@ -39,6 +39,7 @@ class Models:
     def train(self, epochs, training, validation):
 
         validationLen = len(validation)
+        trained = 0
 
         # Trains each network
         for ann in self.nets:
@@ -48,8 +49,8 @@ class Models:
             # For loop iterating for maximum number of epochs
             for i in range(epochs):
 
-                # if i%50 == 0:
-                #     ann.adjustLearning(i, epochs)
+                if i%50 == 0:
+                    ann.adjustLearning(i, epochs)
 
                 """last item of input data row is removed and stored as correct output value,
                 then input is passed into forward pass"""
@@ -89,7 +90,8 @@ class Models:
                     # Otherwise, the MSE becomes previous MSE so it can be compared in next iteration
                     else:
                         prevMSE = mse
-
+            trained += 1
+            print(trained)
             self.trainedMLP.append(ann)
 
         self.writeTrainedModels()
@@ -97,7 +99,6 @@ class Models:
     """Tests all MLPs in array against a test set"""
     def test(self, testArray):
 
-        print("hit")
         testResults = open("annTestResults.txt", "w")
 
         # Iterates over every MLP and assesses the MSE of the test set using that MLP
